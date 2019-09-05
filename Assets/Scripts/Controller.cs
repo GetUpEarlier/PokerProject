@@ -2,7 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
-
+using Photon.Pun;
+using UnityEngine;
+using UnityEngine.Experimental.PlayerLoop;
+using UnityEngine.Networking;
+using UnityEngine.Networking.PlayerConnection;
+using UnityEngine.Networking.Types;
 using CardList = System.Collections.Generic.List<Assets.Scripts.CardInfo>;
 
 namespace Assets.Scripts
@@ -13,6 +18,11 @@ namespace Assets.Scripts
         public List<CardList> History;
         public CardList Stage;
         public int Current;
+    }
+
+    public class GameConnection
+    {
+        
     }
 
     public enum ClientMessageType
@@ -29,12 +39,14 @@ namespace Assets.Scripts
 
     public enum ServerMessageType
     {
-        
+        Dispatch, Pop, Push, 
     }
 
     public class ServerMessage
     {
         public ServerMessageType Type;
+        public string Player;
+        public List<CardInfo> Cards;
     }
     
     public interface IPlayer
@@ -125,7 +137,8 @@ namespace Assets.Scripts
     {
         public override bool Match(CardList cards)
         {
-            
+            PhotonNetwork.ConnectUsingSettings();
+            PhotonNetwork.JoinLobby()
         }
     }
 
@@ -212,9 +225,12 @@ namespace Assets.Scripts
     public class DdzController : IController
     {
         public List<CardPattern> Patterns;
+        public Graph<CardPattern> PatternGraph;
+            
         public DdzController()
         {
             Patterns = new List<CardPattern>();
+            PatternGraph = new Graph<CardPattern>();
         }
 
         public bool IsValid(List<CardInfo> cards)

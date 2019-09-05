@@ -12,6 +12,7 @@ namespace Assets.Scripts
 
     public enum Point
     {
+        
     }
 
 
